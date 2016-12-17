@@ -1,3 +1,8 @@
+{**********************************************************
+*    Copyright (c) Zeljko Cvijanovic Teslic RS/BiH
+*    www.zeljus.com
+*    Created by: 17-12-2016
+***********************************************************}
 unit lcddriver;
 
 {$mode objfpc}{$H+}
