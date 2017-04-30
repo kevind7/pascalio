@@ -10,7 +10,7 @@ unit lcddriver;
 interface
 
 uses
-  Classes, SysUtils, pascalio, fpi2c;
+  Classes, SysUtils,  fpi2c;
 
 const
 
