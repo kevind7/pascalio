@@ -75,8 +75,8 @@
         <UnitName Value="lcddriver"/>
       </Item13>
       <Item14>
-        <Filename Value="src\GpioButons.pas"/>
-        <UnitName Value="GpioButons"/>
+        <Filename Value="src\gpiobuttons.pas"/>
+        <UnitName Value="gpiobuttons"/>
       </Item14>
     </Files>
     <LazDoc Paths="doc"/>
@@ -95,5 +95,8 @@
     <PublishOptions>
       <Version Value="2"/>
     </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
   </Package>
 </CONFIG>

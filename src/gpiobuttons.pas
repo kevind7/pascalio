@@ -3,7 +3,7 @@
 *    www.zeljus.com
 *    Created by: 30-04-2017
 ***********************************************************}
-unit GpioButons;
+unit gpiobuttons;
 
 {$mode objfpc}{$H+}
 
