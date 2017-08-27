@@ -50,10 +50,15 @@ type
       property OnException: TDataEvent read fOnException write fOnException;
     end;
 
+    { TGPIOInterruptThread }
+
     TGPIOInterruptThread = class(TGPIOEventThread)
     protected
       procedure Execute; override;
     end;
+
+    { TGPIOPollThread }
+
     TGPIOPollThread = class(TGPIOEventThread)
     protected
       procedure Execute; override;
@@ -123,6 +128,20 @@ procedure Register;
 begin
   RegisterComponents('PascalIO',[TGenericGPIO]);
   RegisterComponents('PascalIO',[TLinuxGPIO]);
+end;
+
+{ TCustomGPIO.TGPIOPollThread }
+
+procedure TCustomGPIO.TGPIOPollThread.Execute;
+begin
+  inherited Execute;
+end;
+
+{ TCustomGPIO.TGPIOInterruptThread }
+
+procedure TCustomGPIO.TGPIOInterruptThread.Execute;
+begin
+  inherited Execute;
 end;
 
 { TCustomGPIO.TGPIOEventThread }
