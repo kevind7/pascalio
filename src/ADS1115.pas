@@ -1,7 +1,7 @@
 {**********************************************************
 *    Copyright (c) Zeljko Cvijanovic Teslic RS/BiH
 *    www.zeljus.com
-*    Created by: 13-10-2017
+*    Created by: 27-08-2017
 ***********************************************************}
 unit ADS1115;
 
@@ -121,6 +121,8 @@ type
 
     function readADC_SingleEnded(aChannel: TChannels): Word;
     function readADC_Differential_0_1: Word;
+    function readADC_Differential_0_3: Word;
+    function readADC_Differential_1_3: Word;
     function readADC_Differential_2_3: Word;
     procedure startComparator_SingleEnded(aChannel: TChannels; aThreshold: word);
     function getLastConversionResults: word;
@@ -204,6 +206,7 @@ var
   res: word;
 begin
   // Start with default values
+  config := 0;
   config := ADS1015_REG_CONFIG_CQUE_NONE    or // Disable the comparator (default val)
             ADS1015_REG_CONFIG_CLAT_NONLAT  or // Non-latching (default val)
             ADS1015_REG_CONFIG_CPOL_ACTVLOW or // Alert/Rdy active low   (default val)
@@ -241,12 +244,99 @@ begin
 
 end;
 
+function TADS1115.readADC_Differential_0_3: Word;
+var
+  config: word;
+  res: word;
+begin
+  // Start with default values
+   config := 0;
+   config := ADS1015_REG_CONFIG_CQUE_NONE    or // Disable the comparator (default val)
+             ADS1015_REG_CONFIG_CLAT_NONLAT  or // Non-latching (default val)
+             ADS1015_REG_CONFIG_CPOL_ACTVLOW or // Alert/Rdy active low   (default val)
+             ADS1015_REG_CONFIG_CMODE_TRAD   or // Traditional comparator (default val)
+             ord(FRate)   or                    // 1600 samples per second (default)
+             ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
+
+   // Set PGA/voltage range
+   config := config or word(fGain);
+
+   // Set channels
+   config := config  or ord(TDifs(diMUX_DIFF_0_3));          // AIN0 = P, AIN3 = N
+
+   // Set 'start single-conversion' bit
+   config := config or ADS1015_REG_CONFIG_OS_SINGLE;
+
+   // Write config register to the ADC
+   writeRegister(ADS1015_REG_POINTER_CONFIG, config);
+
+   // Wait for the conversion to complete
+   sleep(fConversionDelay);
+
+   res := readRegister(ADS1015_REG_POINTER_CONVERT) Shr fBitShift;
+   if fBitShift = 0 then
+     Result := word(res)
+   else  begin
+     // Shift 12-bit results right 4 bits for the ADS1015,
+     // making sure we keep the sign bit intact
+     if (res > $07FF) then begin
+       // negative number - extend the sign to 16th bit
+       res := res or  $F000;
+     end;
+     Result := word(res);
+   end;
+end;
+
+function TADS1115.readADC_Differential_1_3: Word;
+var
+  config: word;
+  res: word;
+begin
+   // Start with default values
+    config := 0;
+    config := ADS1015_REG_CONFIG_CQUE_NONE    or // Disable the comparator (default val)
+              ADS1015_REG_CONFIG_CLAT_NONLAT  or // Non-latching (default val)
+              ADS1015_REG_CONFIG_CPOL_ACTVLOW or // Alert/Rdy active low   (default val)
+              ADS1015_REG_CONFIG_CMODE_TRAD   or // Traditional comparator (default val)
+              ord(FRate)   or                    // 1600 samples per second (default)
+              ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
+
+    // Set PGA/voltage range
+    config := config or word(fGain);
+
+    // Set channels
+    config := config  or ord(TDifs(diMUX_DIFF_1_3));          // AIN1 = P, AIN3 = N
+
+    // Set 'start single-conversion' bit
+    config := config or ADS1015_REG_CONFIG_OS_SINGLE;
+
+    // Write config register to the ADC
+    writeRegister(ADS1015_REG_POINTER_CONFIG, config);
+
+    // Wait for the conversion to complete
+    sleep(fConversionDelay);
+
+    res := readRegister(ADS1015_REG_POINTER_CONVERT) Shr fBitShift;
+    if fBitShift = 0 then
+      Result := word(res)
+    else  begin
+      // Shift 12-bit results right 4 bits for the ADS1015,
+      // making sure we keep the sign bit intact
+      if (res > $07FF) then begin
+        // negative number - extend the sign to 16th bit
+        res := res or  $F000;
+      end;
+      Result := word(res);
+    end;
+end;
+
 function TADS1115.readADC_Differential_2_3: Word;
 var
   config: word;
   res: word;
 begin
     // Start with default values
+   config := 0;
     config := ADS1015_REG_CONFIG_CQUE_NONE    or // Disable the comparator (default val)
              ADS1015_REG_CONFIG_CLAT_NONLAT  or // Non-latching (default val)
              ADS1015_REG_CONFIG_CPOL_ACTVLOW or // Alert/Rdy active low   (default val)
@@ -290,6 +380,7 @@ var
   config: word;
 begin
      // Start with default values
+     config := 0;
      config := ADS1015_REG_CONFIG_CQUE_1CONV   or // Comparator enabled and asserts on 1 match
                ADS1015_REG_CONFIG_CLAT_LATCH   or // Latching mode
                ADS1015_REG_CONFIG_CPOL_ACTVLOW or // Alert/Rdy active low   (default val)
